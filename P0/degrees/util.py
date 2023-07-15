@@ -44,19 +44,8 @@ class StackFrontier():
             self.frontier = self.frontier[:-1]
             return node
 
-
+#inherits stack
 class QueueFrontier(StackFrontier):
-    def __init__(self):
-        self.frontier = []
-
-    def add(self, node):
-        self.frontier.append(node)
-
-    def contains_state(self, state):
-        return any(node.state == state for node in self.frontier)
-
-    def empty(self):
-        return len(self.frontier) == 0
     
     # Define the function that removes a node from the frontier and returns it.
     def remove(self):
@@ -67,7 +56,7 @@ class QueueFrontier(StackFrontier):
             # Save the oldest item on the list (which was the first one to be added)
             node = self.frontier[0]
             # Save all the items on the list besides the first one (i.e. removing the first node)
-            # self.frontier = self.frontier[1:]
-            node = self.frontier.pop(0)  #remove the first item (queue behavior)
+            self.frontier = self.frontier[1:]
+            # node = self.frontier.pop(0)  #remove the first item (queue behavior)
             return node
         

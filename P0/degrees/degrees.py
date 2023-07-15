@@ -118,12 +118,51 @@ def shortest_path(source, target):
     # TODO
     # raise NotImplementedError
 
-    que = QueueFrontier()
-    explored = []
-    que.add(Node(people.get(source), None, None))
-    for i in range(len(que.frontier)):
-        node = que.frontier[i]
-        print(node.state["name"])
+    num_explored = 0
+
+    #init frontier to srouce actor
+    start = Node(state=source, parent=None, action=None)
+    frontier = QueueFrontier()
+    frontier.add(start)
+
+    # init an empty explored set
+    explored = set()
+
+    # loop until solution found
+
+    while True:
+        # if frontier is empty, no path exists
+        if frontier.empty():
+            return None
+
+        #pick node from frontier
+        node = frontier.remove()
+        num_explored += 1
+
+        # if node is goal; sol found
+
+        if node.state == target:
+            movies = []
+            persons = []
+            #follow parent to find sol
+            while node.parent is not None:
+                movies.append(node.action)
+                persons.append(node.state)
+                node = node.parent
+            movies.reverse()
+            persons.reverse()
+            return list(zip(movies, persons))
+        
+        explored.add(node.state)
+
+        for movie, person in neighbors_for_person(node.state):
+            if not frontier.contains_state(person) and person not in explored:
+                child = Node(state=person, parent=node, action=movie)
+                frontier.add(child)
+
+
+        
+
 
 
 
