@@ -4,23 +4,18 @@ import sys
 from util import Node, StackFrontier, QueueFrontier
 
 # Maps names to a set of corresponding person_ids
-# it maps names to a set of corresponding ids 
-#   (it’s possible that multiple actors have the same name).
 names = {}
 
 # Maps person_ids to a dictionary of: name, birth, movies (a set of movie_ids)
-# maps each person’s id to another dictionary with values for the 
-#   person’s name, birth year, and the set of all the movies they have starred in.
 people = {}
 
 # Maps movie_ids to a dictionary of: title, year, stars (a set of person_ids)
-# maps each movie’s id to another dictionary with values for that movie’s title, 
-#   release year, and the set of all the movie’s stars
 movies = {}
+
 
 def load_data(directory):
     """
-    Load data from CSV files into memory(dictionaries).
+    Load data from CSV files into memory.
     """
     # Load people
     with open(f"{directory}/people.csv", encoding="utf-8") as f:
@@ -58,11 +53,9 @@ def load_data(directory):
 
 
 def main():
-    # if len(sys.argv) > 2:
-    #     sys.exit("Usage: python degrees.py [directory]")
-    # directory = sys.argv[1] if len(sys.argv) == 2 else "large"
-
-    directory = './small'
+    if len(sys.argv) > 2:
+        sys.exit("Usage: python degrees.py [directory]")
+    directory = sys.argv[1] if len(sys.argv) == 2 else "large"
 
     # Load data from files into memory
     print("Loading data...")
@@ -90,18 +83,6 @@ def main():
             movie = movies[path[i + 1][0]]["title"]
             print(f"{i + 1}: {person1} and {person2} starred in {movie}")
 
-""" 
-Our states are people. 
-
-Our actions are movies, which take us from one actor to another (it’s true that a movie could
-    take us to multiple different actors, but that’s okay for this problem). 
-        path_cost = 1 # cost for each action (movies/degree of separation)
-            i.e. unweighted graph
-
-Our initial state and goal state are defined by the two people we’re trying to connect. 
-
-By using breadth-first search, we can find the shortest path from one actor to another.
- """
 
 def shortest_path(source, target):
     """
@@ -109,62 +90,32 @@ def shortest_path(source, target):
     that connect the source to the target.
 
     If no possible path, returns None.
-
-    For example, if the return value of shortest_path were [(1, 2), (3, 4)], 
-        that would mean that the source starred in movie 1 with person 2, 
-        person 2 starred in movie 3 with person 4, and person 4 is the target.
     """
-    
-    # TODO
-    # raise NotImplementedError
 
+    # Keep track of number of states explored
     num_explored = 0
 
-    #init frontier to srouce actor
-    start = Node(state=source, parent=None, action=None)
+    # Initialize frontier to just the starting position
+    start = Node(state=source, parent=None,
+                 action=neighbors_for_person(source))
     frontier = QueueFrontier()
     frontier.add(start)
 
-    # init an empty explored set
+    # Initialize an empty explored set
     explored = set()
 
-    # loop until solution found
+    # Keep looping until solution found
+    # while True:
 
-    while True:
-        # if frontier is empty, no path exists
-        if frontier.empty():
-            return None
+    # If nothing left in frontier, then no path
 
-        #pick node from frontier
-        node = frontier.remove()
-        num_explored += 1
+    # Choose a node from the frontier
 
-        # if node is goal; sol found
+    # If node is the goal, then we have a solution
 
-        if node.state == target:
-            movies = []
-            persons = []
-            #follow parent to find sol
-            while node.parent is not None:
-                movies.append(node.action)
-                persons.append(node.state)
-                node = node.parent
-            movies.reverse()
-            persons.reverse()
-            return list(zip(movies, persons))
-        
-        explored.add(node.state)
+    # Mark node as explored
 
-        for movie, person in neighbors_for_person(node.state):
-            if not frontier.contains_state(person) and person not in explored:
-                child = Node(state=person, parent=node, action=movie)
-                frontier.add(child)
-
-
-        
-
-
-
+    # Add neighbors to frontier
 
 
 def person_id_for_name(name):
